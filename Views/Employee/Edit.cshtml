@@ -24,6 +24,13 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label class="control-label">Skills</label>
+                <input type="text" 
+                class="tagator form-control" value="jQuery,Script,Net"
+                data-tagator-show-all-options-on-focus="true" 
+                data-tagator-autocomplete="['PHP', 'ASP.NET', 'iOS', 'Android']">
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
