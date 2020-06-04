@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EmployeesInformationManager.Data;
 using EmployeesInformationManager.Models;
+using EmployeesInformationManager.Proxies;
 
 namespace Employees_information_manager.Controllers
 {
@@ -25,7 +26,9 @@ namespace Employees_information_manager.Controllers
         // GET: Employee/Create
         public IActionResult Create()
         {
-            return View();
+            EmployeeModelView employeeModelView = new EmployeeModelView();
+            employeeModelView.setSkillsAsync(_context);
+            return View(employeeModelView);
         }
 
         // POST: Employee/Create
@@ -33,15 +36,16 @@ namespace Employees_information_manager.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FullName,Email")] Employee employee)
+        public async Task<IActionResult> Create([Bind("Id,FullName,Email")] EmployeeModelView employeeModelView)
         {
+            Employee employee = employeeModelView.ToEmployee();
             if (ModelState.IsValid)
             {
                 _context.Add(employee);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            return View(employeeModelView);
         }
 
         // GET: Employee/Edit/5
@@ -57,7 +61,10 @@ namespace Employees_information_manager.Controllers
             {
                 return NotFound();
             }
-            return View(employee);
+            EmployeeModelView employeeModelView = new EmployeeModelView();
+            employeeModelView.SetEmployee(employee);
+            employeeModelView.setSkillsAsync(_context);
+            return View(employeeModelView);
         }
 
         // POST: Employee/Edit/5
@@ -65,8 +72,9 @@ namespace Employees_information_manager.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Email")] Employee employee)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Email")] EmployeeModelView employeeModelView)
         {
+            Employee employee = employeeModelView.ToEmployee();
             if (id != employee.Id)
             {
                 return NotFound();
@@ -92,7 +100,7 @@ namespace Employees_information_manager.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(employee);
+            return View(employeeModelView);
         }
 
         // GET: Employee/Delete/5
