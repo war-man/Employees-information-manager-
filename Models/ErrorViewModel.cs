@@ -1,6 +1,4 @@
-using System;
-
-namespace Employees_information_manager.Models
+namespace EmployeesInformationManager.Models
 {
     public class ErrorViewModel
     {

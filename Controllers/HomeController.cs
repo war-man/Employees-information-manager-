@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Employees_information_manager.Models;
+using EmployeesInformationManager.Models;
 
-namespace Employees_information_manager.Controllers
+namespace EmployeesInformationManager.Controllers
 {
     public class HomeController : Controller
     {

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Employees_information_manager
+namespace EmployeesInformationManager
 {
     public class Program
     {
