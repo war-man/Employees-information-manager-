@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -65,18 +66,9 @@ namespace Employees_information_manager.Controllers
             EmployeeModelView employeeModelView = new EmployeeModelView();
             var skillsNames = _context.EmployeeSkill
             .Where(es => es.EmployeeId == employee.Id)
-            .Join(
-                _context.Employee,
-                employeesSkills => employeesSkills.EmployeeId,
-                employee => employee.Id,
-                (employeesSkills, employee) => employeesSkills
-            )
-            .Join(
-                _context.Skill,
-                employeesSkills => employeesSkills.SkillId,
-                skill => skill.Id,
-                (employeesSkills, skill) => skill.Name
-            ).ToList();
+            .Include(es => es.Skill)
+            .Select(es => es.Skill.Name).ToList();
+
             employeeModelView.SetEmployee(employee,skillsNames);
             FillSkills(employeeModelView);
             return View(employeeModelView);

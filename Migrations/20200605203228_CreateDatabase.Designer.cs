@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Employees_information_manager.Migrations
+namespace EmployeesInformationManager.Migrations
 {
     [DbContext(typeof(EmployeesInformationManagerContext))]
     [Migration("20200605203228_CreateDatabase")]

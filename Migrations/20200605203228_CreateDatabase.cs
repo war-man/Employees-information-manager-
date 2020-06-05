@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Employees_information_manager.Migrations
+namespace EmployeesInformationManager.Migrations
 {
     public partial class CreateDatabase : Migration
     {
