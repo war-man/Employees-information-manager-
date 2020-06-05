@@ -1,4 +1,5 @@
 bin/
 obj/
-Migrations/
 EmployeesInformationManager.db
+.vscode/
+publish/
