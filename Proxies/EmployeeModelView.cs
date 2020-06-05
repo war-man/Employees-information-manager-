@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using EmployeesInformationManager.Models;
 using System.Collections.Generic;

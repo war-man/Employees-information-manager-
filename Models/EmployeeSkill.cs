@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace EmployeesInformationManager.Models
 {
     public class EmployeeSkill
