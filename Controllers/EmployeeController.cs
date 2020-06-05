@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -5,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using EmployeesInformationManager.Data;
 using EmployeesInformationManager.Models;
 using EmployeesInformationManager.Proxies;
+using System.Collections.Generic;
 
 namespace Employees_information_manager.Controllers
 {
@@ -27,7 +29,7 @@ namespace Employees_information_manager.Controllers
         public IActionResult Create()
         {
             EmployeeModelView employeeModelView = new EmployeeModelView();
-            employeeModelView.setSkillsAsync(_context);
+            FillSkills(employeeModelView);
             return View(employeeModelView);
         }
 
@@ -36,11 +38,11 @@ namespace Employees_information_manager.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FullName,Email")] EmployeeModelView employeeModelView)
-        {
-            Employee employee = employeeModelView.ToEmployee();
+        public async Task<IActionResult> Create([Bind("Id,FullName,Email,EmployeeSkills")] EmployeeModelView employeeModelView)
+        {   
             if (ModelState.IsValid)
             {
+                Employee employee = InsertEmployee(employeeModelView);
                 _context.Add(employee);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -62,8 +64,22 @@ namespace Employees_information_manager.Controllers
                 return NotFound();
             }
             EmployeeModelView employeeModelView = new EmployeeModelView();
-            employeeModelView.SetEmployee(employee);
-            employeeModelView.setSkillsAsync(_context);
+            var skillsNames = _context.EmployeeSkill
+            .Where(es => es.EmployeeId == employee.Id)
+            .Join(
+                _context.Employee,
+                employeesSkills => employeesSkills.EmployeeId,
+                employee => employee.Id,
+                (employeesSkills, employee) => employeesSkills
+            )
+            .Join(
+                _context.Skill,
+                employeesSkills => employeesSkills.SkillId,
+                skill => skill.Id,
+                (employeesSkills, skill) => skill.Name
+            ).ToList();
+            employeeModelView.SetEmployee(employee,skillsNames);
+            FillSkills(employeeModelView);
             return View(employeeModelView);
         }
 
@@ -72,10 +88,9 @@ namespace Employees_information_manager.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Email")] EmployeeModelView employeeModelView)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Email,EmployeeSkills")] EmployeeModelView employeeModelView)
         {
-            Employee employee = employeeModelView.ToEmployee();
-            if (id != employee.Id)
+            if (id != employeeModelView.Id)
             {
                 return NotFound();
             }
@@ -83,13 +98,18 @@ namespace Employees_information_manager.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {
+                {        
+                     _context.EmployeeSkill.
+                     RemoveRange(_context.EmployeeSkill
+                     .Where(es => es.EmployeeId == employeeModelView.Id));
+                    _context.SaveChanges();
+                    Employee employee = InsertEmployee(employeeModelView);
                     _context.Update(employee);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EmployeeExists(employee.Id))
+                    if (!EmployeeExists(employeeModelView.Id))
                     {
                         return NotFound();
                     }
@@ -136,5 +156,47 @@ namespace Employees_information_manager.Controllers
         {
             return _context.Employee.Any(e => e.Id == id);
         }
+
+        private void FillSkills(EmployeeModelView employeeModelView)
+        {
+            List<string> skills = _context.Skill.Select(s => s.Name).ToList();
+            var temp = string.Join(",",skills);
+            employeeModelView.SuggestedSkills = "['"+temp.Replace(",", "','")+"']";
+        }
+
+        private Employee InsertEmployee(EmployeeModelView employeeModelView)
+        {
+            Employee employee = employeeModelView.ToEmployee();
+            string cleanedString = employeeModelView.EmployeeSkills ?? "";
+            string[] inputSkills = cleanedString.Split(',');
+            foreach(string inputSkill in inputSkills)
+            {
+                Skill skill = _context.Skill
+                .Where(s => s.Name == inputSkill)
+                .FirstOrDefault();
+                if(skill == null)
+                {
+                    skill = new Skill {Name = inputSkill};
+                    _context.Skill.Add(skill);
+                }
+                
+                EmployeeSkill employeeSkill = _context.EmployeeSkill
+                .Where(es => es.SkillId == skill.Id
+                && es.EmployeeId == employee.Id)
+                .FirstOrDefault();
+                if(employeeSkill == null)
+                {
+                    employeeSkill = new EmployeeSkill();
+                    employeeSkill.EmployeeId = employee.Id;
+                    employeeSkill.SkillId = skill.Id;
+                    _context.EmployeeSkill.Add(employeeSkill);
+                    employee.EmployeesSkills.Add(employeeSkill);
+                    skill.EmployeesSkills.Add(employeeSkill); 
+                }
+            }
+            return employee;
+        }
+
+
     }
 }

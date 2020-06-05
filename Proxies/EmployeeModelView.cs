@@ -1,8 +1,7 @@
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 using EmployeesInformationManager.Models;
-using EmployeesInformationManager.Data;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace EmployeesInformationManager.Proxies
 {
@@ -28,19 +27,12 @@ namespace EmployeesInformationManager.Proxies
             return employee;
         }
 
-        public void SetEmployee(Employee employee)
+        public void SetEmployee(Employee employee,List<string> skillsNames)
         {
             this.Id = employee.Id;
             this.FullName = employee.FullName;
             this.Email = employee.Email;
-        }
-
-        public void setSkillsAsync(EmployeesInformationManagerContext context)
-        {
-            this.EmployeeSkills = string.Join(",", new List<string>(){"jQuery", "Script",".NET"});
-            List<string> skills = context.Skill.Select(s => s.Name).ToList();
-            var temp = string.Join(",",skills);
-            this.SuggestedSkills = "['"+temp.Replace(",", "','")+"']";
+            this.EmployeeSkills = string.Join(",", skillsNames);
         }
     }
 }
