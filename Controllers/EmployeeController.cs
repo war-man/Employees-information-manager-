@@ -19,9 +19,9 @@ namespace EmployeesInformationManager.Controllers
         }
 
         // GET: Employee
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _employeeServices.GetAll());
+            return View(_employeeServices.GetAll());
         }
 
         // GET: Employee/Create
@@ -41,21 +41,21 @@ namespace EmployeesInformationManager.Controllers
         {   
             if (ModelState.IsValid)
             {
-                await _employeeServices.Add(employeeModelView);
+                await _employeeServices.AddFromViewAsync(employeeModelView);
                 return RedirectToAction(nameof(Index));
             }
             return View(employeeModelView);
         }
 
         // GET: Employee/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var employee = await _employeeServices.Get(id);
+            var employee = _employeeServices.Get(id);
             if (employee == null)
             {
                 return NotFound();
@@ -82,7 +82,7 @@ namespace EmployeesInformationManager.Controllers
             {
                 try
                 {        
-                    await _employeeServices.Update(employeeModelView);
+                    await _employeeServices.UpdateFromViewAsync(employeeModelView);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -101,14 +101,14 @@ namespace EmployeesInformationManager.Controllers
         }
 
         // GET: Employee/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var employee = await _employeeServices.Get(id);
+            var employee = _employeeServices.Get(id);
             if (employee == null)
             {
                 return NotFound();

@@ -1,4 +1,5 @@
 using System.Linq;
+using EmployeesInformationManager.Repositories;
 using EmployeesInformationManager.Data;
 using System.Collections.Generic;
 
@@ -6,15 +7,16 @@ namespace EmployeesInformationManager.Services
 {
     public class SkillServices
     {
-        private readonly EmployeesInformationManagerContext _context;
+        private readonly SkillRepository skillRepo;
 
         public SkillServices(EmployeesInformationManagerContext context)
         {
-            _context = context;
+            this.skillRepo = new SkillRepository(context);
         }
         public string GetAllAsArrayString()
         {
-            List<string> skills = _context.Skill.Select(s => s.Name).ToList();
+            List<string> skills = skillRepo.GetAll()
+                                 .Select(s => s.Name).ToList();
             string skillsJoined = string.Join(",",skills);
             return "['"+skillsJoined.Replace(",", "','")+"']";
         }

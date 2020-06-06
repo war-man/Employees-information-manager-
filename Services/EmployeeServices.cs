@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using EmployeesInformationManager.Repositories;
 using EmployeesInformationManager.Data;
 using EmployeesInformationManager.Models;
 using EmployeesInformationManager.Proxies;
@@ -10,48 +10,44 @@ namespace EmployeesInformationManager.Services
 {
     public class EmployeeServices
     {
-        private readonly EmployeesInformationManagerContext _context;
+        private readonly EmployeeRepository employeeRepo;
+        private readonly SkillRepository skillRepo;
 
         public EmployeeServices(EmployeesInformationManagerContext context)
         {
-            _context = context;
+            this.employeeRepo = new EmployeeRepository(context);
+            this.skillRepo = new SkillRepository(context);
         }
 
-        public async Task<Employee> Get(int? id)
+        public Employee Get(int? id)
         {
-            return await _context.Employee.FindAsync(id);
+            return employeeRepo.GetByID(id);
         }
-        public async Task<List<Employee>> GetAll()
+        public List<Employee> GetAll()
         {
-            return await _context.Employee.ToListAsync();
+            return employeeRepo.GetAll();
         }
 
         public async Task Delete(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
-            _context.Employee.Remove(employee);
-            await _context.SaveChangesAsync();
+            employeeRepo.Delete(id);
+            await employeeRepo.SaveAsync();
         }
 
         public bool Exists(int id)
         {
-            return _context.Employee.Any(e => e.Id == id);
+            return this.Get(id) != null;
         }
 
         public List<string> GetSkillsNames(int? employeeId)
         {
-            return  _context.EmployeeSkill
-            .Where(es => es.EmployeeId == employeeId)
-            .Include(es => es.Skill)
-            .Select(es => es.Skill.Name).ToList();
+            return employeeRepo.GetSkills(employeeId).Select(s => s.Name).ToList();
         }
 
-        private async Task DeleteSkills(int employeeId)
+        private async Task DeleteSkillsAsync(int employeeId)
         {
-            _context.EmployeeSkill.
-                     RemoveRange(_context.EmployeeSkill
-                     .Where(es => es.EmployeeId == employeeId));
-            await _context.SaveChangesAsync();
+            employeeRepo.DeleteSkills(employeeId);
+            await employeeRepo.SaveAsync();
         }
 
         private Employee ExtractData(EmployeeModelView employeeModelView)
@@ -61,46 +57,31 @@ namespace EmployeesInformationManager.Services
             string[] inputSkills = cleanedString.Split(',');
             foreach(string inputSkill in inputSkills)
             {
-                Skill skill = _context.Skill
-                .Where(s => s.Name == inputSkill)
-                .FirstOrDefault();
+                Skill skill = skillRepo.GetByName(inputSkill);
                 if(skill == null)
                 {
                     skill = new Skill {Name = inputSkill};
-                    _context.Skill.Add(skill);
+                    skillRepo.Add(skill);
                 }
-                
-                EmployeeSkill employeeSkill = _context.EmployeeSkill
-                .Where(es => es.SkillId == skill.Id
-                && es.EmployeeId == employee.Id)
-                .FirstOrDefault();
-                if(employeeSkill == null)
-                {
-                    employeeSkill = new EmployeeSkill();
-                    employeeSkill.EmployeeId = employee.Id;
-                    employeeSkill.SkillId = skill.Id;
-                    _context.EmployeeSkill.Add(employeeSkill);
-                    employee.EmployeesSkills.Add(employeeSkill);
-                    skill.EmployeesSkills.Add(employeeSkill); 
-                }
+                employeeRepo.AddEmployeeSkill(employee,skill);
             }
             return employee;
         }
 
-        public async Task Add(EmployeeModelView employeeModelView)
+        public async Task AddFromViewAsync(EmployeeModelView employeeModelView)
         {
             Employee employee = ExtractData(employeeModelView);
-            _context.Add(employee);
-            await _context.SaveChangesAsync();
+            employeeRepo.Add(employee);
+            await employeeRepo.SaveAsync();
         }
 
         
-        public async Task Update(EmployeeModelView employeeModelView)
+        public async Task UpdateFromViewAsync(EmployeeModelView employeeModelView)
         {
-            await DeleteSkills(employeeModelView.Id);
+            await DeleteSkillsAsync(employeeModelView.Id);
             Employee employee = ExtractData(employeeModelView);
-            _context.Update(employee);
-            await _context.SaveChangesAsync();
+            employeeRepo.Update(employee);
+            await employeeRepo.SaveAsync();
         }
 
 
