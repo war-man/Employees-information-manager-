@@ -1,35 +1,34 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using EmployeesInformationManager.Data;
-using EmployeesInformationManager.Models;
 using EmployeesInformationManager.Proxies;
-using System.Collections.Generic;
+using EmployeesInformationManager.Services;
+using EmployeesInformationManager.Data;
 
-namespace Employees_information_manager.Controllers
+namespace EmployeesInformationManager.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly EmployeesInformationManagerContext _context;
+        private readonly EmployeeServices _employeeServices;
+        private readonly SkillServices _skillServices;
 
         public EmployeeController(EmployeesInformationManagerContext context)
         {
-            _context = context;
+            _employeeServices = new EmployeeServices(context);
+            _skillServices = new SkillServices(context);
         }
 
         // GET: Employee
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Employee.ToListAsync());
+            return View(await _employeeServices.GetAll());
         }
 
         // GET: Employee/Create
         public IActionResult Create()
         {
             EmployeeModelView employeeModelView = new EmployeeModelView();
-            FillSkills(employeeModelView);
+            employeeModelView.SuggestedSkills = _skillServices.GetAllAsArrayString();
             return View(employeeModelView);
         }
 
@@ -42,9 +41,7 @@ namespace Employees_information_manager.Controllers
         {   
             if (ModelState.IsValid)
             {
-                Employee employee = InsertEmployee(employeeModelView);
-                _context.Add(employee);
-                await _context.SaveChangesAsync();
+                await _employeeServices.Add(employeeModelView);
                 return RedirectToAction(nameof(Index));
             }
             return View(employeeModelView);
@@ -58,19 +55,14 @@ namespace Employees_information_manager.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employee.FindAsync(id);
+            var employee = await _employeeServices.Get(id);
             if (employee == null)
             {
                 return NotFound();
             }
             EmployeeModelView employeeModelView = new EmployeeModelView();
-            var skillsNames = _context.EmployeeSkill
-            .Where(es => es.EmployeeId == employee.Id)
-            .Include(es => es.Skill)
-            .Select(es => es.Skill.Name).ToList();
-
-            employeeModelView.SetEmployee(employee,skillsNames);
-            FillSkills(employeeModelView);
+            employeeModelView.SetEmployee(employee,_employeeServices.GetSkillsNames(id));
+            employeeModelView.SuggestedSkills = _skillServices.GetAllAsArrayString();
             return View(employeeModelView);
         }
 
@@ -90,17 +82,11 @@ namespace Employees_information_manager.Controllers
             {
                 try
                 {        
-                     _context.EmployeeSkill.
-                     RemoveRange(_context.EmployeeSkill
-                     .Where(es => es.EmployeeId == employeeModelView.Id));
-                    _context.SaveChanges();
-                    Employee employee = InsertEmployee(employeeModelView);
-                    _context.Update(employee);
-                    await _context.SaveChangesAsync();
+                    await _employeeServices.Update(employeeModelView);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EmployeeExists(employeeModelView.Id))
+                    if (_employeeServices.Exists(employeeModelView.Id))
                     {
                         return NotFound();
                     }
@@ -122,8 +108,7 @@ namespace Employees_information_manager.Controllers
                 return NotFound();
             }
 
-            var employee = await _context.Employee
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var employee = await _employeeServices.Get(id);
             if (employee == null)
             {
                 return NotFound();
@@ -137,57 +122,9 @@ namespace Employees_information_manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var employee = await _context.Employee.FindAsync(id);
-            _context.Employee.Remove(employee);
-            await _context.SaveChangesAsync();
+            await _employeeServices.Delete(id);
             return RedirectToAction(nameof(Index));
         }
-
-        private bool EmployeeExists(int id)
-        {
-            return _context.Employee.Any(e => e.Id == id);
-        }
-
-        private void FillSkills(EmployeeModelView employeeModelView)
-        {
-            List<string> skills = _context.Skill.Select(s => s.Name).ToList();
-            var temp = string.Join(",",skills);
-            employeeModelView.SuggestedSkills = "['"+temp.Replace(",", "','")+"']";
-        }
-
-        private Employee InsertEmployee(EmployeeModelView employeeModelView)
-        {
-            Employee employee = employeeModelView.ToEmployee();
-            string cleanedString = employeeModelView.EmployeeSkills ?? "";
-            string[] inputSkills = cleanedString.Split(',');
-            foreach(string inputSkill in inputSkills)
-            {
-                Skill skill = _context.Skill
-                .Where(s => s.Name == inputSkill)
-                .FirstOrDefault();
-                if(skill == null)
-                {
-                    skill = new Skill {Name = inputSkill};
-                    _context.Skill.Add(skill);
-                }
-                
-                EmployeeSkill employeeSkill = _context.EmployeeSkill
-                .Where(es => es.SkillId == skill.Id
-                && es.EmployeeId == employee.Id)
-                .FirstOrDefault();
-                if(employeeSkill == null)
-                {
-                    employeeSkill = new EmployeeSkill();
-                    employeeSkill.EmployeeId = employee.Id;
-                    employeeSkill.SkillId = skill.Id;
-                    _context.EmployeeSkill.Add(employeeSkill);
-                    employee.EmployeesSkills.Add(employeeSkill);
-                    skill.EmployeesSkills.Add(employeeSkill); 
-                }
-            }
-            return employee;
-        }
-
 
     }
 }
