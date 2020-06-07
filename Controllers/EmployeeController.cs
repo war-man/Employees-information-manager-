@@ -55,14 +55,17 @@ namespace EmployeesInformationManager.Controllers
                 return NotFound();
             }
 
-            var employee = _employeeServices.Get(id);
-            if (employee == null)
+            EmployeeModelView employeeModelView = 
+            _employeeServices.GetAsModelView(id);
+            if (employeeModelView == null)
             {
                 return NotFound();
             }
-            EmployeeModelView employeeModelView = new EmployeeModelView();
-            employeeModelView.SetEmployee(employee,_employeeServices.GetSkillsNames(id));
-            employeeModelView.SuggestedSkills = _skillServices.GetAllAsArrayString();
+            employeeModelView.SetEmployeeSkills(
+                _employeeServices.GetSkillsNames(id)
+            );
+            employeeModelView.SuggestedSkills = 
+            _skillServices.GetAllAsArrayString();
             return View(employeeModelView);
         }
 

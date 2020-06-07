@@ -5,6 +5,7 @@ using EmployeesInformationManager.Data;
 using EmployeesInformationManager.Models;
 using EmployeesInformationManager.Proxies;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace EmployeesInformationManager.Services
 {
@@ -26,6 +27,14 @@ namespace EmployeesInformationManager.Services
         public List<Employee> GetAll()
         {
             return employeeRepo.GetAll();
+        }
+
+        public EmployeeModelView GetAsModelView(int? id)
+        {
+            
+            var serializedParent = JsonConvert.SerializeObject(Get(id)); 
+            return JsonConvert.DeserializeObject
+            <EmployeeModelView>(serializedParent);
         }
 
         public async Task Delete(int id)
@@ -50,10 +59,9 @@ namespace EmployeesInformationManager.Services
             await employeeRepo.SaveAsync();
         }
 
-        private Employee ExtractData(EmployeeModelView employeeModelView)
+        private Employee ExtractData(EmployeeModelView employee)
         {
-            Employee employee = employeeModelView.ToEmployee();
-            string cleanedString = employeeModelView.EmployeeSkills ?? "";
+            string cleanedString = employee.EmployeeSkills ?? "";
             string[] inputSkills = cleanedString.Split(',');
             foreach(string inputSkill in inputSkills)
             {
