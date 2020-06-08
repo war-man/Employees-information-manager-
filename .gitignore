@@ -1,6 +1,7 @@
-bin/
-obj/
-EmployeesInformationManager.db
+src/bin/
+src/obj/
+src/EmployeesInformationManager.db
 .vscode/
-publish/
-appsettings.json
+.vs/
+src/publish/
+src/appsettings.json
