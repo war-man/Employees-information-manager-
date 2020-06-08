@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace EmployeesInformationManager.Migrations
+namespace Employees_information_manager.Migrations
 {
     [DbContext(typeof(EmployeesInformationManagerContext))]
-    [Migration("20200605203228_CreateDatabase")]
+    [Migration("20200608202210_CreateDatabase")]
     partial class CreateDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

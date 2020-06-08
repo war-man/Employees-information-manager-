@@ -24,7 +24,7 @@ namespace EmployeesInformationManager
             services.AddControllersWithViews();
             services.AddDbContext<EmployeesInformationManagerContext>(options =>
             {
-                var connectionString = Configuration.GetConnectionString("EmployeesInformationManagerContext");
+                var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
                 if (Environment.IsDevelopment())
                 {
