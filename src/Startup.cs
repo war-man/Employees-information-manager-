@@ -1,62 +1,33 @@
-using EmployeesInformationManager.Data;
+using Microsoft.AspNetCore.Builder;	
+using Microsoft.AspNetCore.Hosting;	
+using Microsoft.Extensions.Configuration;	
+using Microsoft.Extensions.DependencyInjection;	
+using EmployeesInformationManager.Startup_Strategies;
+using Microsoft.Extensions.Hosting;
 
 namespace EmployeesInformationManager
 {
     public class Startup
     {
+        private IStartup_Strategy startup_Strategy { get; }
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Environment = env;
-            Configuration = configuration;
+            if(env.IsDevelopment())
+                startup_Strategy = new Development_Strategy(configuration);
+            else
+                startup_Strategy = new Production_Strategy(configuration);
         }
-
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Environment { get; }
+        
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-            services.AddDbContext<EmployeesInformationManagerContext>(options =>
-            {
-                var connectionString = Configuration.GetConnectionString("DefaultConnection");
-
-                if (Environment.IsDevelopment())
-                {
-                    options.UseSqlite(connectionString);
-                }
-                else
-                {
-                    options.UseSqlServer(connectionString);
-                }
-            });
+            startup_Strategy.ConfigureServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Employee}/{action=Index}/{id?}");
-            });
+            startup_Strategy.Configure(app);
         }
     }
 }
