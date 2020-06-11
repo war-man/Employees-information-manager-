@@ -9,27 +9,22 @@ namespace EmployeesInformationManager.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly EmployeeServices _employeeServices;
-        private readonly SkillServices _skillServices;
-
+        private readonly DBServicesFacade _db;
         public EmployeeController(EmployeesInformationManagerContext context)
         {
-            _employeeServices = new EmployeeServices(context);
-            _skillServices = new SkillServices(context);
+            _db = new DBServicesFacade(context);
         }
 
         // GET: Employee
         public IActionResult Index()
         {
-            return View(_employeeServices.GetAll());
+            return View(_db.GetEmployeeList());
         }
 
         // GET: Employee/Create
         public IActionResult Create()
         {
-            EmployeeModelView employeeModelView = new EmployeeModelView();
-            employeeModelView.SuggestedSkills = _skillServices.GetAllAsArrayString();
-            return View(employeeModelView);
+            return View(_db.GetNewModelView());
         }
 
         // POST: Employee/Create
@@ -41,7 +36,7 @@ namespace EmployeesInformationManager.Controllers
         {   
             if (ModelState.IsValid)
             {
-                await _employeeServices.AddFromViewAsync(employeeModelView);
+                await _db.AddViewDataAsync(employeeModelView);
                 return RedirectToAction(nameof(Index));
             }
             return View(employeeModelView);
@@ -55,17 +50,11 @@ namespace EmployeesInformationManager.Controllers
                 return NotFound();
             }
 
-            EmployeeModelView employeeModelView = 
-            _employeeServices.GetAsModelView(id);
+            EmployeeModelView employeeModelView = _db.GetModelView(id.Value);
             if (employeeModelView == null)
             {
                 return NotFound();
             }
-            employeeModelView.SetEmployeeSkills(
-                _employeeServices.GetSkillsNames(id)
-            );
-            employeeModelView.SuggestedSkills = 
-            _skillServices.GetAllAsArrayString();
             return View(employeeModelView);
         }
 
@@ -85,11 +74,11 @@ namespace EmployeesInformationManager.Controllers
             {
                 try
                 {        
-                    await _employeeServices.UpdateFromViewAsync(employeeModelView);
+                    await _db.UpdateFromViewAsync(employeeModelView);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (_employeeServices.Exists(employeeModelView.Id))
+                    if (_db.GetEmployee(employeeModelView.Id) != null)
                     {
                         return NotFound();
                     }
@@ -111,7 +100,7 @@ namespace EmployeesInformationManager.Controllers
                 return NotFound();
             }
 
-            var employee = _employeeServices.Get(id);
+            var employee = _db.GetEmployee(id.Value);
             if (employee == null)
             {
                 return NotFound();
@@ -125,7 +114,7 @@ namespace EmployeesInformationManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _employeeServices.Delete(id);
+            await _db.DeleteEmployeeAsync(id);
             return RedirectToAction(nameof(Index));
         }
 

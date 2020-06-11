@@ -1,24 +1,29 @@
 using System.Linq;
 using EmployeesInformationManager.Repositories;
 using EmployeesInformationManager.Data;
+using EmployeesInformationManager.Models;
 using System.Collections.Generic;
 
 namespace EmployeesInformationManager.Services
 {
-    public class SkillServices
+    public class SkillServices : SkillRepository
     {
-        private readonly SkillRepository skillRepo;
-
         public SkillServices(EmployeesInformationManagerContext context)
+        :base(context)
         {
-            this.skillRepo = new SkillRepository(context);
         }
         public string GetAllAsArrayString()
         {
-            List<string> skills = skillRepo.GetAll()
+            List<string> skills = this.GetList(s => true)
                                  .Select(s => s.Name).ToList();
             string skillsJoined = string.Join(",",skills);
             return "['"+skillsJoined.Replace(",", "','")+"']";
+        }
+
+        public Skill GetByName(string name)
+        {
+            return this.GetList(s => s.Name == name)
+            .FirstOrDefault();
         }
 
     }
