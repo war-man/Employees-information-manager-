@@ -1,6 +1,6 @@
 # Employees Information Manager
 
-![](https://github.com/Kallaf/Employees-information-manager-/blob/master/Screenshots/try.gif?raw=true)
+![](https://github.com/Kallaf/Employees-information-manager-/blob/master/Screenshots/screenshot2.gif?raw=true)
 
 ## used libraries
 

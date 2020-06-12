@@ -7,6 +7,8 @@ namespace EmployeesInformationManager.Proxies
     {
         public string EmployeeSkills { get; set; }
         public string SuggestedSkills { get; set; }
+
+        public List<Employee> Employees { get; set; }
         public void SetEmployeeSkills(List<string> skillsNames)
         {
             this.EmployeeSkills = string.Join(",", skillsNames);

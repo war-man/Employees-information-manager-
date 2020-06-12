@@ -18,12 +18,6 @@ namespace EmployeesInformationManager.Controllers
         // GET: Employee
         public IActionResult Index()
         {
-            return View(_db.GetEmployeeList());
-        }
-
-        // GET: Employee/Create
-        public IActionResult Create()
-        {
             return View(_db.GetNewModelView());
         }
 
@@ -47,7 +41,7 @@ namespace EmployeesInformationManager.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("Index",_db.GetNewModelView());
             }
 
             EmployeeModelView employeeModelView = _db.GetModelView(id.Value);
@@ -55,7 +49,7 @@ namespace EmployeesInformationManager.Controllers
             {
                 return NotFound();
             }
-            return View(employeeModelView);
+            return View("Index",employeeModelView);
         }
 
         // POST: Employee/Edit/5

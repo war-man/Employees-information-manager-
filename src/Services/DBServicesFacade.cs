@@ -84,6 +84,7 @@ namespace EmployeesInformationManager.Services
             emv.SetEmployeeSkills(
                 employeeSkillServices.GetSkillsNames(employeeId)
             );
+            emv.Employees = employeeServices.GetList(e=>true).ToList();
             emv.SuggestedSkills = skillServices.GetAllAsArrayString();
             return emv;
         }
@@ -92,6 +93,7 @@ namespace EmployeesInformationManager.Services
         {
             EmployeeModelView emv = new EmployeeModelView();
             emv.SuggestedSkills = skillServices.GetAllAsArrayString();
+            emv.Employees = employeeServices.GetList(e=>true).ToList();
             return emv;
         }
 

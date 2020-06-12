@@ -1,14 +1,58 @@
-@model IEnumerable<EmployeesInformationManager.Models.Employee>
+@model EmployeesInformationManager.Proxies.EmployeeModelView
 
 @{
-    ViewData["Title"] = "Index";
+    var formAction = "Edit";
+    var buttonValue = "Save";
+    var formTitle = "Edit User Data";
+    if(@Model.Id <= 0)
+    {
+        formAction = buttonValue = "Create";
+        formTitle = "Add new user";
+    }
+    ViewData["Title"] = formAction;
 }
 
-<h1>Index</h1>
+<h4>@formTitle</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="@formAction">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if(@Model.Id > 0)
+            {    
+                <input type="hidden" asp-for="Id" />
+            }
+            <div class="form-group">
+                <label asp-for="FullName" class="control-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmployeeSkills" class="control-label">Skills</label>
+                <input asp-for="EmployeeSkills" type="text" 
+                class="tagator form-control" value="@Model.EmployeeSkills"
+                data-tagator-show-all-options-on-focus="true" 
+                data-tagator-autocomplete="@Model.SuggestedSkills">
+            </div>
+            <div class="form-group">
+                <input type="submit" value="@buttonValue" class="btn btn-primary" />
+                @if(@Model.Id > 0)
+                {    
+                    <a class = "btn btn-secondary" asp-action="Index">Cancel</a>
+                }
+            </div>
+        </form>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<hr />
+<h4>All users</h4>
+
 <table class="table">
     <thead>
         <tr>
@@ -22,7 +66,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Employees) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.FullName)
@@ -38,3 +82,6 @@
 }
     </tbody>
 </table>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 
@@ -11,6 +12,7 @@ namespace EmployeesInformationManager.Models
         }
         public int Id { get; set; }
         
+        [DisplayName("Full name")]
         [Required]
         public string FullName { get; set; }
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
