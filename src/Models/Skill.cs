@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace EmployeesInformationManager.Models
 {
+    ///<remarks>Defines the Skill database table
     public class Skill
     {
         public Skill()

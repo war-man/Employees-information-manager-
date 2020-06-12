@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace EmployeesInformationManager.Models
 {
+    ///<remarks>Inserts the following skills in the database: PHP, ASP.NET, iOS, Android
     public static class SeedData
     {
         public static void Initialize(IServiceProvider serviceProvider)

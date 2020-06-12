@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace EmployeesInformationManager.Models
 {
+    ///<remarks>Defines the Employee database table
     public class Employee
     {
         public Employee()

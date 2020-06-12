@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;	
 namespace EmployeesInformationManager.Startup_Strategies
 {
+    /// <remarks> Used to declare the startup strategy for development enviroment
     public class Development_Strategy : Abstract_Strategy
     {
         public Development_Strategy(IConfiguration configuration) 

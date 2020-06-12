@@ -1,5 +1,6 @@
 namespace EmployeesInformationManager.Models
 {
+    ///<remarks>Used to define the many to many relation ship between employee and skill
     public class EmployeeSkill
     {
         public int EmployeeId { get; set; }

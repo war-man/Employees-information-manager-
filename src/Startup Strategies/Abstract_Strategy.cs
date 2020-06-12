@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EmployeesInformationManager.Startup_Strategies
 {
+    /// <remarks> Used to implement the startup strategy
+    /// common methods between all enviroments.</remarks>
     public abstract class Abstract_Strategy:IStartup_Strategy
     {
 

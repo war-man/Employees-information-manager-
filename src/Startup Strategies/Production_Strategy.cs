@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 namespace EmployeesInformationManager.Startup_Strategies
 {
+    /// <remarks> Used to declare the startup strategy for production enviroment
     public class Production_Strategy : Abstract_Strategy
     {
         public Production_Strategy(IConfiguration configuration) 
