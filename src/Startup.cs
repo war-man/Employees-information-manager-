@@ -12,10 +12,8 @@ namespace EmployeesInformationManager
         private IStartup_Strategy startup_Strategy { get; }
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            if(env.IsDevelopment())
-                startup_Strategy = new Development_Strategy(configuration);
-            else
-                startup_Strategy = new Production_Strategy(configuration);
+            StartupStrategyFactory startupStrategyFactory = new StartupStrategyFactory(configuration);
+            startup_Strategy = startupStrategyFactory.CreateStartupStrategy(env);
         }
         
         // This method gets called by the runtime. Use this method to add services to the container.

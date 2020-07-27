@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace EmployeesInformationManager.Startup_Strategies
 {
     /// <remarks> Used to declare the startup strategy in different enviroments
-    interface IStartup_Strategy
+    public interface IStartup_Strategy
     {
         /// <summary> Configures the services used by the program like the database context.</summary>
         public void ConfigureServices(IServiceCollection services);
