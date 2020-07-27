@@ -1,0 +1,13 @@
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\obj\Debug\netcoreapp3.1\Models.csprojAssemblyReference.cache
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\obj\Debug\netcoreapp3.1\Models.AssemblyInfoInputs.cache
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\obj\Debug\netcoreapp3.1\Models.AssemblyInfo.cs
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\obj\Debug\netcoreapp3.1\Models.csproj.CoreCompileInputs.cache
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\bin\Debug\netcoreapp3.1\Models.exe
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\bin\Debug\netcoreapp3.1\Models.deps.json
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\bin\Debug\netcoreapp3.1\Models.runtimeconfig.json
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\bin\Debug\netcoreapp3.1\Models.runtimeconfig.dev.json
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\bin\Debug\netcoreapp3.1\Models.dll
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\bin\Debug\netcoreapp3.1\Models.pdb
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\obj\Debug\netcoreapp3.1\Models.dll
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\obj\Debug\netcoreapp3.1\Models.pdb
+C:\Users\Ahmed\source\repos\Kallaf-Task\Models\obj\Debug\netcoreapp3.1\Models.genruntimeconfig.cache
